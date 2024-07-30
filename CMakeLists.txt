@@ -19,7 +19,7 @@ set(sanitize_flags
     "-fsanitize=address,leak,undefined;-fno-omit-frame-pointer;-g;-O0")
 
 add_library(cpplib_compiler_flags INTERFACE)
-target_compile_features(cpplib_compiler_flags INTERFACE cxx_std_23)
+target_compile_features(cpplib_compiler_flags INTERFACE cxx_std_20)
 target_compile_options(
   cpplib_compiler_flags
   INTERFACE "$<${gcc_like_cxx}:$<BUILD_INTERFACE:${error_flags}>>"

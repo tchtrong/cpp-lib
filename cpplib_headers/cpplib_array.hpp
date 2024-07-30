@@ -41,42 +41,42 @@ namespace cpplib
             return m_data[pos];
         }
 
-        constexpr auto operator[](size_type pos) -> reference
+        constexpr auto operator[](size_type pos) noexcept -> reference
         {
             return m_data[pos];
         }
 
-        constexpr auto operator[](size_type pos) const -> const_reference
+        constexpr auto operator[](size_type pos) const noexcept -> const_reference
         {
             return m_data[pos];
         }
 
-        constexpr auto front() -> reference
+        constexpr auto front() noexcept -> reference
         {
             return m_data[0];
         }
 
-        constexpr auto front() const -> const_reference
+        constexpr auto front() const noexcept -> const_reference
         {
             return m_data[0];
         }
 
-        constexpr auto back() -> reference
+        constexpr auto back() noexcept -> reference
         {
             return m_data[N - 1];
         }
 
-        constexpr auto back() const -> const_reference
+        constexpr auto back() const noexcept -> const_reference
         {
             return m_data[N - 1];
         }
 
-        constexpr auto data() -> pointer
+        constexpr auto data() noexcept -> pointer
         {
             return static_cast<pointer>(m_data);
         }
 
-        constexpr auto data() const -> const_pointer
+        constexpr auto data() const noexcept -> const_pointer
         {
             return static_cast<const_pointer>(m_data);
         }
