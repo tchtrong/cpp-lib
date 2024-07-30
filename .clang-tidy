@@ -1,0 +1,6 @@
+---
+Checks: "*, -fuchsia-*, -llvmlibc-*, -altera-*, -google-*"
+CheckOptions:
+    misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic: True
+---
+

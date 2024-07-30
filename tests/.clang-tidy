@@ -1,0 +1,5 @@
+---
+InheritParentConfig: True
+Checks: "-cppcoreguidelines-owning-memory, -cppcoreguidelines-avoid-magic-numbers, -readability-magic-numbers"
+---
+
