@@ -3,8 +3,7 @@
 
 #include "cpplib_concepts.hpp"
 
-namespace cpplib
-{
+namespace cpplib {
     template <typename I>
     concept legacy_iterator = requires(I iter) {
         { *iter } -> referenceable;

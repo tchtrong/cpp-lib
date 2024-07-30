@@ -4,39 +4,28 @@
 #include "cpplib_concepts.hpp"
 #include <compare>
 
-namespace cpplib
-{
+namespace cpplib {
     constexpr auto synth_three_way =
-        []<typename T, typename U>(const T& t_t, const U& u_u) noexcept(
-            []()
-            {
-                if constexpr (std::three_way_comparable_with<T, U>)
-                {
-                    return noexcept(std::declval<T&>() <=> std::declval<U&>());
-                }
-                else
-                {
-                    return noexcept(std::declval<T&>() < std::declval<U&>()) &&
-                           noexcept(std::declval<U&>() < std::declval<T&>());
-                }
-            }())
+        []<typename T, typename U>(const T& t_t, const U& u_u) noexcept([]() {
+            if constexpr (std::three_way_comparable_with<T, U>) {
+                return noexcept(std::declval<T&>() <=> std::declval<U&>());
+            } else {
+                return noexcept(std::declval<T&>() < std::declval<U&>())
+                    && noexcept(std::declval<U&>() < std::declval<T&>());
+            }
+        }())
         requires requires {
             { t_t < u_u } -> boolean_testable;
             { u_u < t_t } -> boolean_testable;
         }
     {
-        if constexpr (std::three_way_comparable_with<T, U>)
-        {
+        if constexpr (std::three_way_comparable_with<T, U>) {
             return t_t <=> u_u;
-        }
-        else
-        {
-            if (t_t < u_u)
-            {
+        } else {
+            if (t_t < u_u) {
                 return std::weak_ordering::less;
             }
-            if (u_u < t_t)
-            {
+            if (u_u < t_t) {
                 return std::weak_ordering::greater;
             }
             return std::weak_ordering::equivalent;

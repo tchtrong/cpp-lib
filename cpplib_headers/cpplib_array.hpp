@@ -5,11 +5,9 @@
 
 #include <iterator>
 
-namespace cpplib
-{
+namespace cpplib {
     template <typename T, std::size_t N>
-    class array
-    {
+    class array {
     public:
         using value_type             = T;
         using size_type              = std::size_t;
@@ -23,136 +21,109 @@ namespace cpplib
         using reverse_iterator       = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        constexpr auto at(size_type pos) -> reference
-        {
-            if (pos >= N)
-            {
+        constexpr auto at(size_type pos) -> reference {
+            if (pos >= N) {
                 throw std::out_of_range("");
             }
             return m_data[pos];
         }
 
-        constexpr auto at(size_type pos) const -> const_reference
-        {
-            if (pos >= N)
-            {
+        constexpr auto at(size_type pos) const -> const_reference {
+            if (pos >= N) {
                 throw std::out_of_range("");
             }
             return m_data[pos];
         }
 
-        constexpr auto operator[](size_type pos) noexcept -> reference
-        {
+        constexpr auto operator[](size_type pos) noexcept -> reference {
             return m_data[pos];
         }
 
-        constexpr auto operator[](size_type pos) const noexcept -> const_reference
-        {
+        constexpr auto operator[](size_type pos) const noexcept -> const_reference {
             return m_data[pos];
         }
 
-        constexpr auto front() noexcept -> reference
-        {
+        constexpr auto front() noexcept -> reference {
             return m_data[0];
         }
 
-        constexpr auto front() const noexcept -> const_reference
-        {
+        constexpr auto front() const noexcept -> const_reference {
             return m_data[0];
         }
 
-        constexpr auto back() noexcept -> reference
-        {
+        constexpr auto back() noexcept -> reference {
             return m_data[N - 1];
         }
 
-        constexpr auto back() const noexcept -> const_reference
-        {
+        constexpr auto back() const noexcept -> const_reference {
             return m_data[N - 1];
         }
 
-        constexpr auto data() noexcept -> pointer
-        {
+        constexpr auto data() noexcept -> pointer {
             return static_cast<pointer>(m_data);
         }
 
-        constexpr auto data() const noexcept -> const_pointer
-        {
+        constexpr auto data() const noexcept -> const_pointer {
             return static_cast<const_pointer>(m_data);
         }
 
-        constexpr auto begin() noexcept -> iterator
-        {
+        constexpr auto begin() noexcept -> iterator {
             return iterator(data());
         }
 
-        constexpr auto begin() const noexcept -> const_iterator
-        {
+        constexpr auto begin() const noexcept -> const_iterator {
             return const_iterator(data());
         }
 
-        constexpr auto cbegin() const noexcept -> const_iterator
-        {
+        constexpr auto cbegin() const noexcept -> const_iterator {
             return const_iterator(data());
         }
 
-        constexpr auto end() noexcept -> iterator
-        {
+        constexpr auto end() noexcept -> iterator {
             return iterator(data() + N);
         }
 
-        constexpr auto end() const noexcept -> const_iterator
-        {
+        constexpr auto end() const noexcept -> const_iterator {
             return const_iterator(data() + N);
         }
 
-        constexpr auto cend() const noexcept -> const_iterator
-        {
+        constexpr auto cend() const noexcept -> const_iterator {
             return const_iterator(data() + N);
         }
 
-        constexpr auto rbegin() noexcept -> reverse_iterator
-        {
+        constexpr auto rbegin() noexcept -> reverse_iterator {
             return reverse_iterator(end());
         }
 
-        constexpr auto rbegin() const noexcept -> const_reverse_iterator
-        {
+        constexpr auto rbegin() const noexcept -> const_reverse_iterator {
             return const_reverse_iterator(end());
         }
 
-        constexpr auto crbegin() const noexcept -> const_reverse_iterator
-        {
+        constexpr auto crbegin() const noexcept -> const_reverse_iterator {
             return const_reverse_iterator(end());
         }
 
-        constexpr auto rend() noexcept -> reverse_iterator
-        {
+        constexpr auto rend() noexcept -> reverse_iterator {
             return reverse_iterator(begin());
         }
 
-        constexpr auto rend() const noexcept -> const_reverse_iterator
-        {
+        constexpr auto rend() const noexcept -> const_reverse_iterator {
             return const_reverse_iterator(begin());
         }
 
-        constexpr auto crend() const noexcept -> const_reverse_iterator
-        {
+        constexpr auto crend() const noexcept -> const_reverse_iterator {
             return const_reverse_iterator(begin());
         }
 
-        [[nodiscard]] constexpr auto size() const noexcept -> size_type
-        {
+        [[nodiscard]] constexpr auto size() const noexcept -> size_type {
             return N;
         }
 
-        constexpr void fill(const T& value)
-        {
+        constexpr void fill(const T& value) {
             std::fill_n(begin(), N, value);
         }
 
-        constexpr void swap(array& other) noexcept(std::is_nothrow_swappable_v<T>)
-        {
+        constexpr void swap(array& other) noexcept(std::is_nothrow_swappable_v<T>) {
             std::swap_ranges(begin(), end(), other.begin());
         }
 
@@ -163,20 +134,16 @@ namespace cpplib
     array(T, U...) -> array<std::enable_if_t<(std::is_same_v<T, U> && ...), T>, 1 + sizeof...(U)>;
 
     template <class T, std::size_t N>
-    auto operator==(const array<T, N>& lhs, const array<T, N>& rhs) -> bool
-    {
+    auto operator==(const array<T, N>& lhs, const array<T, N>& rhs) -> bool {
         return std::equal(lhs.begin(), lhs.begin(), rhs.begin());
     }
 
     template <class T, std::size_t N>
-    constexpr auto
-    operator<=>(const array<T, N>& lhs, const array<T, N>& rhs) -> synth_three_way_result<T>
-    {
-        for (size_t idx = 0; idx < N; ++idx)
-        {
+    constexpr auto operator<=>(const array<T, N>& lhs,
+                               const array<T, N>& rhs) -> synth_three_way_result<T> {
+        for (size_t idx = 0; idx < N; ++idx) {
             auto cmp_res = synth_three_way(lhs[idx], rhs[idx]);
-            if (cmp_res != 0)
-            {
+            if (cmp_res != 0) {
                 return cmp_res;
             }
         }

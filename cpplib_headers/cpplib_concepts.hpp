@@ -4,8 +4,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace cpplib
-{
+namespace cpplib {
     template <typename T>
     concept referenceable = requires(T& var) { typename T; };
 
@@ -27,13 +26,13 @@ namespace cpplib
 
     template <typename T>
     concept copy_constructible =
-        move_constructible<T> && constructible_from<T, T&> && convertible_to<T&, T> &&
-        constructible_from<const T, T> && convertible_to<T, const T> &&
-        constructible_from<const T&, T> && convertible_to<T, const T&>;
+        move_constructible<T> && constructible_from<T, T&> && convertible_to<T&, T>
+        && constructible_from<const T, T> && convertible_to<T, const T>
+        && constructible_from<const T&, T> && convertible_to<T, const T&>;
 
     template <typename Derived, typename Base>
-    concept derived_from = std::is_base_of_v<Base, Derived> &&
-                           std::is_convertible_v<const volatile Derived*, const volatile Base*>;
+    concept derived_from = std::is_base_of_v<Base, Derived>
+                        && std::is_convertible_v<const volatile Derived*, const volatile Base*>;
 
     template <typename B>
     concept boolean_testable_impl = convertible_to<B, bool>;
