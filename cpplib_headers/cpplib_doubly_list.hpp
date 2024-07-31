@@ -132,10 +132,11 @@ namespace cpplib {
 
             constexpr iterator_impl() noexcept = default;
 
+            // NOLINTBEGIN: Allow for implicit conversion from iterator to const_iterator
             template <typename U = value_type, typename = std::enable_if_t<std::is_const_v<U>>>
-            // NOLINTNEXTLINE: Allow for implicit conversion from iterator to const_iterator
             constexpr iterator_impl(const iterator_impl<std::remove_const_t<U>>& other) noexcept
                 : iterator_impl(other.mp_node){};
+            // NOLINTEND
 
         private:
             using node_base_type =

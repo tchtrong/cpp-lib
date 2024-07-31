@@ -1,6 +1,6 @@
 # create the testing file and list of tests
 set(tests doubly_list.cpp iterator.cpp merge.cpp erase_clear.cpp)
-create_test_sourcelist(doubly_list_tests doubly_list_tests.cxx ${tests})
+create_test_sourcelist(doubly_list_tests doubly_list_tests.cpp ${tests})
 
 # add the executable
 add_executable(doubly_list_tests_exe ${doubly_list_tests})
