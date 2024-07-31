@@ -22,8 +22,14 @@ add_library(cpplib_compiler_flags INTERFACE)
 target_compile_features(cpplib_compiler_flags INTERFACE cxx_std_23)
 target_compile_options(
   cpplib_compiler_flags
-  INTERFACE "$<${gcc_like_cxx}:$<BUILD_INTERFACE:${error_flags}>>"
-            "$<${msvc_cxx}:$<BUILD_INTERFACE:-W4;-WX>>")
+  INTERFACE
+    "$<${gcc_like_cxx}:-stdlib=libc++;$<BUILD_INTERFACE:${error_flags}>>"
+    "$<${msvc_cxx}:$<BUILD_INTERFACE:-W4;-WX>>")
+target_link_options(
+  cpplib_compiler_flags
+  INTERFACE
+  "$<${gcc_like_cxx}:-stdlib=libc++;-lc++abi;$<BUILD_INTERFACE:${sanitize_flags}>>"
+)
 
 add_library(cpplib_sanitizer_flags INTERFACE)
 target_compile_options(
