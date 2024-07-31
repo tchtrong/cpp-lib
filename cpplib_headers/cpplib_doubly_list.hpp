@@ -2,8 +2,8 @@
 #define CPPLIB_DOUBLY_LIST_H_
 
 #include "cpplib_array.hpp"
+
 #include <memory>
-#include <type_traits>
 
 namespace cpplib {
     template <typename T, typename Allocator = std::allocator<T>>
