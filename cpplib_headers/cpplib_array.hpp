@@ -3,7 +3,9 @@
 
 #include "cpplib_compare.hpp"
 
+#include <algorithm>
 #include <iterator>
+#include <stdexcept>
 
 namespace cpplib {
     template <typename T, std::size_t N>
