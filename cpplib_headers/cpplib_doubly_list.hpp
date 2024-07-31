@@ -2,7 +2,6 @@
 #define CPPLIB_DOUBLY_LIST_H_
 
 #include "cpplib_array.hpp"
-#include "cpplib_compare.hpp"
 #include <memory>
 #include <type_traits>
 
@@ -329,11 +328,13 @@ namespace cpplib {
         }
 
         [[nodiscard]] constexpr auto front(this auto&& self) noexcept -> auto&& {
-            return std::forward_like<decltype(self)>(*self.begin());
+            return std::forward_like<decltype(self)>(
+                static_cast<node*>(self.m_end.mp_next)->get_data());
         }
 
         [[nodiscard]] constexpr auto back(this auto&& self) noexcept -> auto&& {
-            return std::forward_like<decltype(self)>(*(--self.end()));
+            return std::forward_like<decltype(self)>(
+                static_cast<node*>(self.m_end.mp_prev)->get_data());
         }
 
         [[nodiscard]] constexpr auto begin(this auto&& self) noexcept {
@@ -558,6 +559,13 @@ namespace cpplib {
                 m_end.mp_prev->connect_sequence(first2.mp_node, last2.mp_node->mp_prev);
             }
         }
+
+        constexpr void sort() noexcept(noexcept(sort(std::less<>{}))) {
+            sort(std::less<>{});
+        }
+
+        template <class Compare>
+        constexpr void sort(Compare comp);
 
     private:
         constexpr void destruct_node(node* nodeptr)
