@@ -1,4 +1,7 @@
-#include "cpplib_doubly_list.hpp"
+#include <cassert>
+
+import std;
+import cpplib;
 
 using list       = cpplib::doubly_list<int>;
 using const_list = const list;

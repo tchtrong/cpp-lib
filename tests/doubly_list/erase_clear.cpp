@@ -1,10 +1,7 @@
-
-#include "cpplib_array.hpp"
-#include "cpplib_doubly_list.hpp"
-
-#include <algorithm>
 #include <cassert>
-#include <iterator>
+
+import std;
+import cpplib;
 
 using list       = cpplib::doubly_list<int>;
 using const_list = const list;

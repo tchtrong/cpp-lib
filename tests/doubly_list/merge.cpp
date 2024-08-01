@@ -1,5 +1,7 @@
-#include "cpplib_doubly_list.hpp"
 #include <cassert>
+
+import std;
+import cpplib;
 
 static constexpr cpplib::array<int, 6> input1{
     1, 3, 5, 7, 9, 12,

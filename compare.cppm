@@ -1,10 +1,12 @@
-#ifndef CPPLIB_COMPARE_H_
-#define CPPLIB_COMPARE_H_
+module;
 
-#include "cpplib_concepts.hpp"
-#include <compare>
+import std;
 
-namespace cpplib {
+export module cpplib:compare;
+
+import :concepts;
+
+export namespace cpplib {
     constexpr auto synth_three_way =
         []<typename T, typename U>(const T& t_t, const U& u_u) noexcept(
             (std::three_way_comparable_with<T, U>&& noexcept(std::declval<T&>()
@@ -33,5 +35,3 @@ namespace cpplib {
     using synth_three_way_result =
         decltype(synth_three_way(std::declval<T&>(), std::declval<U&>()));
 }; // namespace cpplib
-
-#endif // CPPLIB_COMPARE_H_

@@ -1,11 +1,11 @@
-#ifndef CPPLIB_DOUBLY_LIST_H_
-#define CPPLIB_DOUBLY_LIST_H_
+module;
 
-#include "cpplib_array.hpp"
+export module cpplib:doubly_list;
 
-#include <memory>
+import std;
+import :array;
 
-namespace cpplib {
+export namespace cpplib {
     template <typename T, typename Allocator = std::allocator<T>>
     class doubly_list {
         static_assert(std::is_same_v<typename std::remove_cv_t<T>, T>,
@@ -474,11 +474,11 @@ namespace cpplib {
                 return;
             }
             if (count > m_size) {
-                for (size_t idx = 0; idx < count - m_size; ++idx) {
+                for (size_type idx = 0; idx < count - m_size; ++idx) {
                     emplace(end());
                 }
             } else {
-                for (size_t idx = 0; idx < m_size - count; ++idx) {
+                for (size_type idx = 0; idx < m_size - count; ++idx) {
                     pop_back();
                 }
             }
@@ -489,11 +489,11 @@ namespace cpplib {
                 return;
             }
             if (count > m_size) {
-                for (size_t idx = 0; idx < count - m_size; ++idx) {
+                for (size_type idx = 0; idx < count - m_size; ++idx) {
                     emplace(end(), value);
                 }
             } else {
-                for (size_t idx = 0; idx < m_size - count; ++idx) {
+                for (size_type idx = 0; idx < m_size - count; ++idx) {
                     pop_back();
                 }
             }
@@ -625,12 +625,10 @@ namespace cpplib {
         return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
 
-    template <class TT, class Alloc>
-    constexpr auto operator<=>(const doubly_list<TT, Alloc>& lhs,
-                               const doubly_list<TT, Alloc>& rhs) -> synth_three_way_result<TT> {
-        return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(), rhs.begin(),
-                                                      rhs.end(), synth_three_way);
-    }
+    // template <class TT, class Alloc>
+    // constexpr auto operator<=>(const doubly_list<TT, Alloc>& lhs,
+    //                            const doubly_list<TT, Alloc>& rhs) -> synth_three_way_result<TT> {
+    //     return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(), rhs.begin(),
+    //                                                   rhs.end(), synth_three_way);
+    // }
 } // namespace cpplib
-
-#endif // CPPLIB_DOUBLY_LIST_H_

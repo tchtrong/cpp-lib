@@ -1,10 +1,10 @@
-#ifndef CPPLIB_CONCEPTS_H_
-#define CPPLIB_CONCEPTS_H_
+module;
 
-#include <type_traits>
-#include <utility>
+import std;
 
-namespace cpplib {
+export module cpplib:concepts;
+
+export namespace cpplib {
     template <typename T>
     concept referenceable = requires(T& var) { typename T; };
 
@@ -43,5 +43,3 @@ namespace cpplib {
     };
 
 } // namespace cpplib
-
-#endif // CPPLIB_CONCEPTS_H_

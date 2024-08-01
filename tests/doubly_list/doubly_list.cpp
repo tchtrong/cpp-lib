@@ -1,6 +1,7 @@
-#include "cpplib_doubly_list.hpp"
-
 #include <cassert>
+
+import std;
+import cpplib;
 
 struct S {
     constexpr S() noexcept = default;

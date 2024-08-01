@@ -1,9 +1,6 @@
-#ifndef CPPLIB_ITERATOR_H_
-#define CPPLIB_ITERATOR_H_
+export module cpplib:iterator;
 
-#include "cpplib_concepts.hpp"
-
-namespace cpplib {
+export namespace cpplib {
     template <typename I>
     concept legacy_iterator = requires(I iter) {
         { *iter } -> referenceable;
@@ -11,5 +8,3 @@ namespace cpplib {
         { *iter++ } -> referenceable;
     }; // && copyable<I>;
 } // namespace cpplib
-
-#endif
