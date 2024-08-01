@@ -4,6 +4,79 @@ export module cpplib:doubly_list;
 
 import std;
 import :array;
+import :compare;
+import :iterator;
+
+struct node_base {
+    constexpr node_base() noexcept = default;
+
+    constexpr node_base(node_base&& other) noexcept : node_base() {
+        *this = std::move(other);
+    }
+
+    constexpr auto operator=(node_base&& other) noexcept -> node_base& {
+        if (other.mp_next != &other) {
+            connect_after(other.mp_prev);
+            other.detach().reset();
+        }
+        return *this;
+    };
+
+    constexpr node_base(const node_base& other) noexcept = delete;
+
+    constexpr auto operator=(const node_base& other) noexcept -> node_base& = delete;
+
+    constexpr ~node_base() = default;
+
+    constexpr auto reset() noexcept -> node_base& {
+        mp_next = mp_prev = this;
+        return *this;
+    }
+
+    constexpr auto connect_after(node_base* nodeptr) noexcept -> node_base& {
+        mp_next          = nodeptr->mp_next;
+        mp_prev          = nodeptr;
+        nodeptr->mp_next = this;
+        mp_next->mp_prev = this;
+        return *this;
+    }
+
+    constexpr auto connect_sequence(node_base* first, node_base* last) noexcept -> node_base& {
+        first->mp_prev->mp_next = last->mp_next;
+        last->mp_next->mp_prev  = first->mp_prev;
+        last->mp_next           = mp_next;
+        mp_next->mp_prev        = last;
+        first->mp_prev          = this;
+        mp_next                 = first;
+        return *this;
+    }
+
+    constexpr auto detach() noexcept -> node_base& {
+        if (mp_next == mp_prev && mp_prev == this) {
+            return *this;
+        }
+        mp_next->mp_prev = mp_prev;
+        mp_prev->mp_next = mp_next;
+        return *this;
+    }
+
+    constexpr void swap(node_base& other) noexcept {
+        auto* tmp              = other.mp_prev;
+        other.mp_prev          = mp_prev;
+        other.mp_prev->mp_next = &other;
+        mp_prev                = tmp;
+        mp_prev->mp_next       = this;
+
+        tmp                    = other.mp_next;
+        other.mp_next          = mp_next;
+        other.mp_next->mp_prev = &other;
+        mp_next                = tmp;
+        mp_next->mp_prev       = this;
+    }
+
+    node_base* mp_prev{this};
+    node_base* mp_next{this};
+};
 
 export namespace cpplib {
     template <typename T, typename Allocator = std::allocator<T>>
@@ -14,97 +87,25 @@ export namespace cpplib {
                       "doubly_list must have the same value_type as its allocator");
 
     public:
-        using value_type      = T;
-        using allocator_type  = Allocator;
-        using size_type       = std::size_t;
-        using difference_type = std::ptrdiff_t;
-        using reference       = value_type&;
-        using const_reference = const value_type&;
+        using value_type     = T;
+        using allocator_type = Allocator;
 
     private:
         using list_type        = doubly_list<value_type, allocator_type>;
         using allocator_traits = std::allocator_traits<allocator_type>;
 
     public:
-        using pointer       = allocator_traits::pointer;
-        using const_pointer = allocator_traits::const_pointer;
+        using reference       = value_type&;
+        using const_reference = const value_type&;
+        using pointer         = allocator_traits::pointer;
+        using const_pointer   = allocator_traits::const_pointer;
+        using difference_type = allocator_traits::difference_type;
+        using size_type       = allocator_traits::size_type;
 
     private:
-        struct node_base {
-            constexpr node_base() noexcept = default;
-
-            constexpr node_base(node_base&& other) noexcept : node_base() {
-                *this = std::move(other);
-            }
-
-            constexpr auto operator=(node_base&& other) noexcept -> node_base& {
-                if (other.mp_next != &other) {
-                    connect_after(other.mp_prev);
-                    other.detach().reset();
-                }
-                return *this;
-            };
-
-            constexpr node_base(const node_base& other) noexcept = delete;
-
-            constexpr auto operator=(const node_base& other) noexcept -> node_base& = delete;
-
-            constexpr ~node_base() = default;
-
-            constexpr auto reset() noexcept -> node_base& {
-                mp_next = mp_prev = this;
-                return *this;
-            }
-
-            constexpr auto connect_after(node_base* nodeptr) noexcept -> node_base& {
-                mp_next          = nodeptr->mp_next;
-                mp_prev          = nodeptr;
-                nodeptr->mp_next = this;
-                mp_next->mp_prev = this;
-                return *this;
-            }
-
-            constexpr auto connect_sequence(node_base* first,
-                                            node_base* last) noexcept -> node_base& {
-                first->mp_prev->mp_next = last->mp_next;
-                last->mp_next->mp_prev  = first->mp_prev;
-                last->mp_next           = mp_next;
-                mp_next->mp_prev        = last;
-                first->mp_prev          = this;
-                mp_next                 = first;
-                return *this;
-            }
-
-            constexpr auto detach() noexcept -> node_base& {
-                if (mp_next == mp_prev && mp_prev == this) {
-                    return *this;
-                }
-                mp_next->mp_prev = mp_prev;
-                mp_prev->mp_next = mp_next;
-                return *this;
-            }
-
-            constexpr void swap(node_base& other) noexcept {
-                auto tmp               = other.mp_prev;
-                other.mp_prev          = mp_prev;
-                other.mp_prev->mp_next = &other;
-                mp_prev                = tmp;
-                mp_prev->mp_next       = this;
-
-                tmp                    = other.mp_next;
-                other.mp_next          = mp_next;
-                other.mp_next->mp_prev = &other;
-                mp_next                = tmp;
-                mp_next->mp_prev       = this;
-            }
-
-            node_base* mp_prev{this};
-            node_base* mp_next{this};
-        };
-
         struct node : public node_base {
             constexpr auto get_data_ptr() const noexcept -> pointer {
-                return std::bit_cast<pointer>(&m_data);
+                return std::bit_cast<pointer>(std::addressof(m_data));
             }
 
             constexpr auto get_data() const noexcept -> reference {
@@ -116,23 +117,24 @@ export namespace cpplib {
 
         using node_allocator_type   = allocator_traits::template rebind_alloc<node>;
         using node_allocator_traits = allocator_traits::template rebind_traits<node>;
+        using void_pointer          = allocator_traits::void_pointer;
+        using void_pointer_traits   = std::pointer_traits<void_pointer>;
 
         template <typename IT>
         class iterator_impl {
         public:
             using value_type        = IT;
-            using difference_type   = list_type::difference_type;
-            using pointer           = std::conditional_t<std::is_const_v<value_type>,
-                                                         list_type::const_pointer, list_type::pointer>;
-            using reference         = std::conditional_t<std::is_const_v<value_type>,
-                                                         list_type::const_reference, list_type::reference>;
+            using reference         = value_type&;
+            using pointer           = void_pointer_traits::template rebind<value_type>;
+            using difference_type   = std::pointer_traits<pointer>::difference_type;
             using iterator_category = std::bidirectional_iterator_tag;
 
             friend list_type;
 
             constexpr iterator_impl() noexcept = default;
 
-            // NOLINTBEGIN: Allow for implicit conversion from iterator to const_iterator
+            // NOLINTBEGIN: Allow for implicit conversion from iterator to
+            // const_iterator
             template <typename U = value_type, typename = std::enable_if_t<std::is_const_v<U>>>
             constexpr iterator_impl(const iterator_impl<std::remove_const_t<U>>& other) noexcept
                 : iterator_impl(other.mp_node){};
@@ -342,7 +344,7 @@ export namespace cpplib {
             return iter<decltype(self)>(self.m_end.mp_next);
         }
 
-        [[nodiscard]] constexpr auto cbegin() const noexcept -> const_iterator {
+        [[nodiscard]] constexpr auto cbegin() const noexcept -> auto {
             return begin();
         }
 
@@ -350,7 +352,7 @@ export namespace cpplib {
             return iter<decltype(self)>(const_cast<node_base*>(&self.m_end));
         }
 
-        [[nodiscard]] constexpr auto cend() const noexcept -> const_iterator {
+        [[nodiscard]] constexpr auto cend() const noexcept -> auto {
             return end();
         }
 
@@ -393,7 +395,7 @@ export namespace cpplib {
             return res;
         }
 
-        template <std::input_iterator InputIt>
+        template <cpplib::legacy_input_iterator InputIt>
         constexpr auto insert(const_iterator pos, InputIt first, InputIt last)
             noexcept(noexcept(emplace(pos, *first))) -> iterator {
             if (first == last) {
@@ -589,7 +591,7 @@ export namespace cpplib {
             return p_new;
         }
 
-        template <std::input_iterator InputIt>
+        template <cpplib::legacy_input_iterator InputIt>
         constexpr void assign_dispatch(InputIt first, InputIt last)
             noexcept(noexcept(*begin() = *first) && noexcept(erase(begin(), end()))
                      && noexcept(insert(begin(), first, last))) {
@@ -615,20 +617,21 @@ export namespace cpplib {
         }
 
         node_allocator_type m_node_allocator{};
-        node_base           m_end{};
+        node_base           m_end;
         size_type           m_size{};
     };
 
     template <class TT, class Alloc>
     constexpr auto operator==(const doubly_list<TT, Alloc>& lhs,
                               const doubly_list<TT, Alloc>& rhs) noexcept -> bool {
-        return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
+        return lhs.size() == rhs.size()
+            && std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
-    // template <class TT, class Alloc>
-    // constexpr auto operator<=>(const doubly_list<TT, Alloc>& lhs,
-    //                            const doubly_list<TT, Alloc>& rhs) -> synth_three_way_result<TT> {
-    //     return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(), rhs.begin(),
-    //                                                   rhs.end(), synth_three_way);
-    // }
+    template <class TT, class Alloc>
+    constexpr auto operator<=>(const doubly_list<TT, Alloc>& lhs,
+                               const doubly_list<TT, Alloc>& rhs) -> synth_three_way_result<TT> {
+        return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(), rhs.begin(),
+                                                      rhs.end(), synth_three_way);
+    }
 } // namespace cpplib

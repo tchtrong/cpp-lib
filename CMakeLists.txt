@@ -60,7 +60,7 @@ target_sources(
          compare.cppm
          concepts.cppm
          doubly_list.cppm
-         iterator.cppm
          cpplib.cppm)
 target_link_libraries(cpplib PUBLIC cpplib_compiler_flags
                                     cpplib_sanitizer_flags)
+add_subdirectory("iterator")

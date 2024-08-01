@@ -30,58 +30,59 @@ export namespace cpplib {
                                             const_reverse_iterator, reverse_iterator>;
 
     public:
-        constexpr auto at(this auto&& self, size_type pos) -> decltype(auto) {
+        [[nodiscard]] constexpr auto at(this auto&& self, size_type pos) -> decltype(auto) {
             if (pos >= N) {
                 throw std::out_of_range("");
             }
             return std::forward_like<decltype(self)>(self.m_data[pos]);
         }
 
-        constexpr auto operator[](this auto&& self, size_type pos) noexcept -> decltype(auto) {
+        [[nodiscard]] constexpr auto operator[](this auto&& self,
+                                                size_type   pos) noexcept -> decltype(auto) {
             return std::forward_like<decltype(self)>(self.m_data[pos]);
         }
 
-        constexpr auto front(this auto&& self) noexcept -> decltype(auto) {
+        [[nodiscard]] constexpr auto front(this auto&& self) noexcept -> decltype(auto) {
             return std::forward_like<decltype(self)>(self.m_data[0]);
         }
 
-        constexpr auto back(this auto&& self) noexcept -> decltype(auto) {
+        [[nodiscard]] constexpr auto back(this auto&& self) noexcept -> decltype(auto) {
             return std::forward_like<decltype(self)>(self.m_data[N - 1]);
         }
 
-        constexpr auto data(this auto&& self) noexcept -> auto {
+        [[nodiscard]] constexpr auto data(this auto&& self) noexcept -> auto {
             return std::forward_like<decltype(self)>(std::to_address(self.m_data));
         }
 
-        constexpr auto begin(this auto&& self) noexcept -> auto {
+        [[nodiscard]] constexpr auto begin(this auto&& self) noexcept -> auto {
             return iter<decltype(self)>(self.data());
         }
 
-        constexpr auto cbegin() const noexcept -> auto {
+        [[nodiscard]] constexpr auto cbegin() const noexcept -> auto {
             return begin();
         }
 
-        constexpr auto end(this auto&& self) noexcept -> auto {
+        [[nodiscard]] constexpr auto end(this auto&& self) noexcept -> auto {
             return iter<decltype(self)>(self.data() + N);
         }
 
-        constexpr auto cend() const noexcept -> auto {
+        [[nodiscard]] constexpr auto cend() const noexcept -> auto {
             return end();
         }
 
-        constexpr auto rbegin(this auto&& self) noexcept -> auto {
+        [[nodiscard]] constexpr auto rbegin(this auto&& self) noexcept -> auto {
             return rev_iter<decltype(self)>(self.end());
         }
 
-        constexpr auto crbegin() const noexcept -> auto {
+        [[nodiscard]] constexpr auto crbegin() const noexcept -> auto {
             return rbegin();
         }
 
-        constexpr auto rend(this auto&& self) noexcept -> auto {
+        [[nodiscard]] constexpr auto rend(this auto&& self) noexcept -> auto {
             return rev_iter<decltype(self)>(self.begin());
         }
 
-        constexpr auto crend() const noexcept -> auto {
+        [[nodiscard]] constexpr auto crend() const noexcept -> auto {
             return rend();
         }
 
@@ -105,18 +106,13 @@ export namespace cpplib {
 
     template <class T, std::size_t N>
     auto operator==(const array<T, N>& lhs, const array<T, N>& rhs) -> bool {
-        return std::equal(lhs.begin(), lhs.begin(), rhs.begin());
+        return std::equal(lhs.begin(), lhs.begin(), rhs.begin(), rhs.end());
     }
 
     template <typename T, std::size_t N>
     constexpr auto operator<=>(const array<T, N>& lhs,
                                const array<T, N>& rhs) -> synth_three_way_result<T> {
-        for (std::size_t idx = 0; idx < N; ++idx) {
-            auto cmp_res = synth_three_way(lhs[idx], rhs[idx]);
-            if (cmp_res != 0) {
-                return cmp_res;
-            }
-        }
-        return std::strong_ordering::equal;
+        return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(), rhs.begin(),
+                                                      rhs.end(), synth_three_way);
     }
 } // namespace cpplib
