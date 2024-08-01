@@ -64,11 +64,3 @@ target_sources(
          cpplib.cppm)
 target_link_libraries(cpplib PUBLIC cpplib_compiler_flags
                                     cpplib_sanitizer_flags)
-
-# Make an executable.
-add_executable(main)
-# Note that this source is *not* allowed to `import std` as it ends up with only
-# C++20 support due to the `uses_std` INTERFACE requirements.
-target_sources(main PRIVATE main.cpp)
-target_compile_features(main PRIVATE cxx_std_26)
-target_link_libraries(main PRIVATE cpplib)
