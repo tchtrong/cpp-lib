@@ -1,9 +1,8 @@
 module;
 
-import std;
-
 export module cpplib:compare;
 
+import std;
 import :concepts;
 
 export namespace cpplib {

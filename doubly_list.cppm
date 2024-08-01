@@ -182,7 +182,7 @@ export namespace cpplib {
             };
 
         private:
-            constexpr explicit iterator_impl(node_base* p_node) noexcept : mp_node(p_node){};
+            constexpr explicit iterator_impl(node_base* p_node) noexcept : mp_node(p_node) {};
 
             node_base* mp_node{};
         };
@@ -246,7 +246,7 @@ export namespace cpplib {
 
         constexpr doubly_list(doubly_list&& other) noexcept
             : m_node_allocator(std::move(other.m_node_allocator)), m_end(std::move(other.m_end)),
-              m_size(std::move(other.m_size)) {
+              m_size(other.m_size) {
             other.m_size = 0;
         };
 
@@ -257,12 +257,12 @@ export namespace cpplib {
             : doubly_list(alloc) {
             if constexpr (node_allocator_traits::is_always_equal::value) {
                 m_end        = std::move(other.m_end);
-                m_size       = std::move(other.m_size);
+                m_size       = other.m_size;
                 other.m_size = 0;
             } else {
                 if (m_node_allocator == other.m_node_allocator) {
                     m_end        = std::move(other.m_end);
-                    m_size       = std::move(other.m_size);
+                    m_size       = other.m_size;
                     other.m_size = 0;
                 } else {
                     insert(end(), std::make_move_iterator(other.begin()),
@@ -610,7 +610,7 @@ export namespace cpplib {
                 m_node_allocator = std::move(other.m_node_allocator);
             }
             m_end        = std::move(other.m_end);
-            m_size       = std::move(other.m_size);
+            m_size       = other.m_size;
             other.m_size = 0;
         }
 

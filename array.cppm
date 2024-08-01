@@ -1,8 +1,8 @@
 module;
 
-import std;
-
 export module cpplib:array;
+
+import std;
 import :compare;
 
 export namespace cpplib {
