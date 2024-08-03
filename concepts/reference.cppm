@@ -3,6 +3,7 @@ export module cpplib:concepts.reference;
 import std;
 import :concepts.convertible_to;
 import :concepts.same_as;
+import :concepts.type_traits;
 
 namespace cpplib {
     export template <typename T>
@@ -14,13 +15,13 @@ namespace cpplib {
     };
 
     export template <typename T>
-    concept lvalue_reference = std::is_lvalue_reference_v<T>;
+    concept reference = is_compound<T> && std::is_reference_v<T>;
 
     export template <typename T>
-    concept rvalue_reference = std::is_rvalue_reference_v<T>;
+    concept lvalue_reference = reference<T> && std::is_lvalue_reference_v<T>;
 
     export template <typename T>
-    concept reference = lvalue_reference<T> || rvalue_reference<T>;
+    concept rvalue_reference = reference<T> && std::is_rvalue_reference_v<T>;
 
     export template <typename T, typename U>
     concept common_reference_with =

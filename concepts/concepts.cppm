@@ -36,13 +36,13 @@ namespace cpplib {
                               };
 
     export template <typename T>
-    concept movable = object<T> && move_constructible<T> && assignable_from<T&, T> && swappable<T>;
+    concept movable = is_object<T> && move_constructible<T> && assignable_from<T&, T> && swappable<T>;
 
     export template <typename T>
     concept copyable = copy_constructible<T> && movable<T> && assignable_from<T&, T&>
                     && assignable_from<T&, const T&> && assignable_from<T&, const T>;
 
     export template <typename Derived, typename Base>
-    concept derived_from = base_of<Base, Derived>
+    concept derived_from = is_base_of<Base, Derived>
                         && implicitly_convertible_to<const volatile Derived*, const volatile Base*>;
 } // namespace cpplib
