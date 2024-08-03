@@ -6,9 +6,9 @@ import :concepts;
 namespace cpplib {
     export template <typename I>
     concept legacy_iterator = requires(I iter) {
-        { *iter } -> referenceable;
+        { *iter } -> can_reference;
         { ++iter } -> same_as<I&>;
-        { *iter++ } -> referenceable;
+        { *iter++ } -> can_reference;
     } && copyable<I>;
 
     export template <class I>

@@ -58,9 +58,10 @@ target_sources(
          FILES
          array.cppm
          compare.cppm
-         concepts.cppm
          doubly_list.cppm
          cpplib.cppm)
 target_link_libraries(cpplib PUBLIC cpplib_compiler_flags
                                     cpplib_sanitizer_flags)
+
 add_subdirectory("iterator")
+add_subdirectory("concepts")

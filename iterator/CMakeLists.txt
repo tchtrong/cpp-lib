@@ -6,4 +6,5 @@ target_sources(
          CXX_MODULES
          FILES
          concepts.cppm
+         iterator_traits.cppm
          iterator.cppm)

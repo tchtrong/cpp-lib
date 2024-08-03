@@ -5,6 +5,7 @@ export module cpplib:doubly_list;
 import std;
 import :array;
 import :compare;
+import :concepts;
 import :iterator;
 
 struct node_base {
@@ -80,12 +81,8 @@ struct node_base {
 
 export namespace cpplib {
     template <typename T, typename Allocator = std::allocator<T>>
+        requires(same_as<std::remove_cv_t<T>, T> && same_as<typename Allocator::value_type, T>)
     class doubly_list {
-        static_assert(std::is_same_v<typename std::remove_cv_t<T>, T>,
-                      "doubly_list must have a non-const, non-volatile value_type");
-        static_assert(std::is_same_v<typename Allocator::value_type, T>,
-                      "doubly_list must have the same value_type as its allocator");
-
     public:
         using value_type     = T;
         using allocator_type = Allocator;
@@ -135,22 +132,16 @@ export namespace cpplib {
 
             // NOLINTBEGIN: Allow for implicit conversion from iterator to
             // const_iterator
-            template <typename U = value_type, typename = std::enable_if_t<std::is_const_v<U>>>
+            template <is_const U = IT>
             constexpr iterator_impl(const iterator_impl<std::remove_const_t<U>>& other) noexcept
                 : iterator_impl(other.mp_node){};
             // NOLINTEND
 
-        private:
-            using node_base_type =
-                std::conditional_t<std::is_const_v<value_type>, const node_base, node_base>;
-            using node_type = std::conditional_t<std::is_const_v<value_type>, const node, node>;
-
-        public:
-            constexpr auto operator*() const noexcept -> reference {
+            constexpr auto operator*() const noexcept -> decltype(auto) {
                 return static_cast<node*>(mp_node)->get_data();
             }
 
-            constexpr auto operator->() const noexcept -> pointer {
+            constexpr auto operator->() const noexcept -> decltype(auto) {
                 return static_cast<node*>(mp_node)->get_data_ptr();
             }
 
@@ -178,7 +169,7 @@ export namespace cpplib {
 
             constexpr auto operator==(const iterator_impl& other) const noexcept -> bool = default;
 
-            template <typename U = value_type, typename = std::enable_if_t<!std::is_const_v<U>>>
+            template <typename U = IT, typename = std::enable_if_t<!std::is_const_v<U>>>
             constexpr auto operator==(const iterator_impl<const U>& other) const noexcept -> bool {
                 return this->mp_node == other.mp_node;
             };
@@ -194,6 +185,13 @@ export namespace cpplib {
         using const_iterator         = iterator_impl<const value_type>;
         using reverse_iterator       = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+        static_assert(legacy_bidirectional_iterator<iterator>);
+        static_assert(legacy_bidirectional_iterator<const_iterator>);
+        static_assert(legacy_bidirectional_iterator<reverse_iterator>);
+        static_assert(legacy_bidirectional_iterator<const_reverse_iterator>);
+        static_assert(convertible_to<iterator, const_iterator>);
+        static_assert(not convertible_to<const_iterator, iterator>);
+        static_assert(equality_comparable_with<iterator, const_iterator>);
 
     private:
         template <typename Self>
