@@ -28,7 +28,7 @@ namespace cpplib {
                                                       std::add_lvalue_reference_t<const U>>>;
 
     export template <typename LHS, typename RHS>
-    concept assignable_from = lvalue_reference<LHS>
+    concept assignable_from = is_lvalue_reference<LHS>
                            && common_reference_with<const std::remove_reference_t<LHS>&,
                                                     const std::remove_reference_t<RHS>&>
                            && requires(LHS lhs, RHS&& rhs) {
@@ -36,7 +36,8 @@ namespace cpplib {
                               };
 
     export template <typename T>
-    concept movable = is_object<T> && move_constructible<T> && assignable_from<T&, T> && swappable<T>;
+    concept movable =
+        is_object<T> && move_constructible<T> && assignable_from<T&, T> && swappable<T>;
 
     export template <typename T>
     concept copyable = copy_constructible<T> && movable<T> && assignable_from<T&, T&>

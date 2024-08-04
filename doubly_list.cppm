@@ -132,8 +132,9 @@ export namespace cpplib {
 
             // NOLINTBEGIN: Allow for implicit conversion from iterator to
             // const_iterator
-            template <is_const U = IT>
-            constexpr iterator_impl(const iterator_impl<std::remove_const_t<U>>& other) noexcept
+            template <is_const = value_type>
+            constexpr iterator_impl(
+                const iterator_impl<std::remove_const_t<value_type>>& other) noexcept
                 : iterator_impl(other.mp_node){};
             // NOLINTEND
 

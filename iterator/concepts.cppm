@@ -27,7 +27,7 @@ namespace cpplib {
     export template <class I>
     concept legacy_forward_iterator =
         legacy_input_iterator<I> && constructible_from<I>
-        && std::is_reference_v<std::iter_reference_t<I>>
+        && is_reference<std::iter_reference_t<I>>
         && same_as<std::remove_cvref_t<std::iter_reference_t<I>>,
                    typename std::indirectly_readable_traits<I>::value_type>
         && requires(I iter) {

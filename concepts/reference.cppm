@@ -15,13 +15,13 @@ namespace cpplib {
     };
 
     export template <typename T>
-    concept reference = is_compound<T> && std::is_reference_v<T>;
+    concept is_reference = is_compound<T> && std::is_reference_v<T>;
 
     export template <typename T>
-    concept lvalue_reference = reference<T> && std::is_lvalue_reference_v<T>;
+    concept is_lvalue_reference = is_reference<T> && std::is_lvalue_reference_v<T>;
 
     export template <typename T>
-    concept rvalue_reference = reference<T> && std::is_rvalue_reference_v<T>;
+    concept is_rvalue_reference = is_reference<T> && std::is_rvalue_reference_v<T>;
 
     export template <typename T, typename U>
     concept common_reference_with =
